@@ -1,5 +1,5 @@
-local Config = lib.require('shared')
-local Server = lib.require('sv_config')
+local Config = lib.load('shared')
+local Server = lib.load('sv_config')
 local activePlys = {}
 local cachedPlayers = {}
 
@@ -161,11 +161,12 @@ function PlayerHasLoaded(src)
             cachedPlayers[cid] = { xp = 0, completed = 0, failed = 0, tier = 'D', }
             MySQL.insert.await('INSERT INTO export_xp (cid, xp, completed, failed) VALUES (?, ?, ?, ?)', {cid, 0, 0 ,0})
         end
-        TriggerClientEvent('randol_exports:client:cacheRep', src, cachedPlayers[cid])
     end
+    SetTimeout(2000, function()
+        TriggerClientEvent('randol_exports:client:cacheRep', src, cachedPlayers[cid])
+    end)
 end
 
- -- For whatever reason the resource gets restarted live. Could be a more efficient way to do this?
 local function handleLiveRestart()
     local players = GetActivePlayers()
     if #players == 0 then return end
